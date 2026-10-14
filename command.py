@@ -522,7 +522,8 @@ def _status_full_text() -> str:
           if settings.get("continuation_downgrade_votes") else []),
         f"Tool error escalation: {'on' if settings.get('tool_error_escalation') else 'off'}",
         f"Display: TUI={'on' if settings['show_tui_status'] else 'off'} · "
-        f"Desktop popup={'on' if settings['show_desktop_popup'] else 'off'}",
+        f"Desktop popup={'on' if settings['show_desktop_popup'] else 'off'} · "
+        f"debug={'on' if settings.get('debug') else 'off'}",
     ])
     if settings.get("scorer_provider") == _scorers.CLOUDFLARE:
         lines.append(f"Cloudflare account: {'ready' if payload['cloudflare_account_ready'] else 'missing or invalid'}")

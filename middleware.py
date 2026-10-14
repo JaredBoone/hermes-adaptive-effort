@@ -75,6 +75,7 @@ DEFAULTS: Dict[str, Any] = {
     "tool_error_escalation": True,
     "show_tui_status": True,
     "show_desktop_popup": True,
+    "debug": False,
 }
 
 # Injected by register(ctx); None until a PluginContext exists (and in tests).
@@ -893,6 +894,7 @@ def _settings() -> Dict[str, Any]:
         "show_tui_status": _bool("show_tui_status", DEFAULTS["show_tui_status"]),
         "show_desktop_popup": _bool(
             "show_desktop_popup", DEFAULTS["show_desktop_popup"]),
+        "debug": _bool("debug", DEFAULTS["debug"]),
     }
     settings["scorer_model_effective"] = _scorers.model_for(
         settings["scorer_provider"], settings["scorer_model"], settings["cloudflare_model"],
