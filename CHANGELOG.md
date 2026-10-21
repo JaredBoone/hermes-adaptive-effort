@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Changed
 
 - The history store no longer opens SQLite several times per request: the schema is created once per database file, an unchanged status snapshot is not rewritten (nothing is written in `off` mode), per-conversation mode overrides are cached for one second and invalidated at once by `/hae <mode> here` and session reset, commits use `synchronous=NORMAL`, and the request path no longer waits on a locked store. Measured on one Windows machine with a fake scorer: 14 ms to 0.2 ms median per `off` request and about 40 ms to 28 ms per `auto`/`always` request
+- Lower per-request overhead in the middleware: settings are read from the config once per request, route lookups and tool-result fingerprints are memoised, and the tool-error scan only walks the current turn's last 20 results (behaviour unchanged)
 - Resolved scorer API keys are reused for 30 seconds per provider instead of being read from the secret scope and environment on every scorer call; a rotated or removed key can lag by up to 30 seconds, a newly added key is picked up at once, and `/hae status` credential checks never use the cache
 
 ### Added
@@ -23,6 +24,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Fixed
 
 - Scorer error responses (non-2xx, unreadable or malformed bodies) are now always closed on every adapter, ending a socket leak on Jev, OpenRouter, Cloudflare and Nace
+- A failure while cleaning up after a middleware error (Claude history invalidation) can no longer escape `on_llm_request`; the request still fails open unchanged
 
 ## [0.4.0] - 2026-10-20
 
