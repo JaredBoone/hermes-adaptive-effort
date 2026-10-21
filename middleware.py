@@ -190,6 +190,7 @@ def reset_state() -> None:
         _CLI_STATUS_TEXT = "N/A"
         _MODE_OVERRIDE = None
     _route_trial.reset()
+    _history_store.invalidate_caches()
     _scorer_http.clear_key_cache()
 
 

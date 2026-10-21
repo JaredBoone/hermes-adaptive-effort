@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- The history store no longer opens SQLite several times per request: the schema is created once per database file, an unchanged status snapshot is not rewritten (nothing is written in `off` mode), per-conversation mode overrides are cached for one second and invalidated at once by `/hae <mode> here` and session reset, commits use `synchronous=NORMAL`, and the request path no longer waits on a locked store. Measured on one Windows machine with a fake scorer: 14 ms to 0.2 ms median per `off` request and about 40 ms to 28 ms per `auto`/`always` request
+- Resolved scorer API keys are reused for 30 seconds per provider instead of being read from the secret scope and environment on every scorer call; a rotated or removed key can lag by up to 30 seconds, a newly added key is picked up at once, and `/hae status` credential checks never use the cache
+
 ### Added
 
 - Manual, billed effort replay tooling (`scripts/run_effort_replay.py`, `scripts/compare_replay.py`, `tests/fixtures/effort_replay_corpus.json`) that derives the cheapest passing effort per synthetic item from a target model's own answers and compares it with hand labels and scorer choices; `run_scorer_eval.py` gains `--corpus` (default unchanged). Tooling only, no runtime change; see `docs/validation/EFFORT_REPLAY.md` (#71)
@@ -18,10 +23,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Fixed
 
 - Scorer error responses (non-2xx, unreadable or malformed bodies) are now always closed on every adapter, ending a socket leak on Jev, OpenRouter, Cloudflare and Nace
-
-### Changed
-
-- Resolved scorer API keys are reused for 30 seconds per provider instead of being read from the secret scope and environment on every scorer call; a rotated or removed key can lag by up to 30 seconds, a newly added key is picked up at once, and `/hae status` credential checks never use the cache
 
 ## [0.4.0] - 2026-10-20
 
